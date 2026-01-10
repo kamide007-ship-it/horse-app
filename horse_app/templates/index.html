@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <title>馬名検索・自動評価</title>
+  <link rel="stylesheet" href="/static/style.css">
+  <style>
+    body { font-family: sans-serif; margin: 20px; }
+    .container { max-width: 820px; margin: 0 auto; }
+    label { display:block; margin-top: 12px; font-weight: 700; }
+    input, select, textarea { width: 100%; padding: 8px; margin-top: 6px; }
+    .note { color:#666; font-size: 12px; }
+    .flash { background:#fff3cd; border:1px solid #ffeeba; padding: 10px; border-radius: 8px; margin: 12px 0; }
+    .box { border:1px solid #ddd; border-radius: 10px; padding: 12px; margin: 12px 0; }
+    button { margin-top: 14px; padding: 10px 16px; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>馬名検索 → 自動評価</h1>
+
+    <div class="box">
+      <b>データ更新リンク（常時表示）</b><br>
+      <a href="/admin/refresh-data">🔄 データ再取得（CSV更新）</a>
+      &nbsp;|&nbsp;
+      <a href="/status" target="_blank">📌 現在のデータ状態（JSON）</a>
+      <div class="note" style="margin-top:6px;">
+        ※ ADMIN_TOKEN を設定している場合は <code>/admin/refresh-data?token=XXXX</code> を使用。
+      </div>
+    </div>
+
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        <div class="flash">
+          {% for m in messages %}<p>{{ m }}</p>{% endfor %}
+        </div>
+      {% endif %}
+    {% endwith %}
+
+    <form action="/evaluate" method="post" enctype="multipart/form-data">
+      <h3>基本情報</h3>
+
+      <label for="horse_name">馬名</label>
+      <input id="horse_name" name="horse_name" placeholder="例：フラワーカンパニー" required>
+
+      <label for="horse_image">馬体写真（任意）</label>
+      <input id="horse_image" type="file" name="horse_image" accept="image/*">
+
+      <h3 style="margin-top:18px;">評価オプション</h3>
+      <label style="font-weight:400;">
+        <input type="checkbox" name="include_broodmare" value="1">
+        繁殖牝馬評価を含める
+      </label>
+
+      <label for="sire_line">父系（任意）</label>
+      <input id="sire_line" name="sire_line" placeholder="例：サンデー系 / キングマンボ系">
+
+      <label for="dam_sire_line">母父系（任意）</label>
+      <input id="dam_sire_line" name="dam_sire_line" placeholder="例：米国ダート系 / Deputy Minister 系">
+
+      <h3 style="margin-top:18px;">netkeiba 実績（URLのみ・任意）</h3>
+      <p class="note">
+        ※ URLを貼るだけで実績を参照して評価に反映します（無ければ無視）。<br>
+        ※ コア評価は公式/オープンCSVで成立し、netkeibaは補助（任意）。
+      </p>
+      <label for="netkeiba_result_url">netkeiba 成績ページURL（任意）</label>
+      <input id="netkeiba_result_url" name="netkeiba_result_url" placeholder="https://db.netkeiba.com/horse/result/....">
+
+      <h3 style="margin-top:18px;">JBIS（任意：URL or Upload）</h3>
+      <p class="note">※ どちらか一方でOK。アップロードは保険です。</p>
+
+      <label for="jbis_csv_url">JBIS CSV URL（任意）</label>
+      <input id="jbis_csv_url" name="jbis_csv_url" placeholder="https://.../jbis.csv">
+
+      <label for="jbis_csv_file">JBIS CSV Upload（任意）</label>
+      <input id="jbis_csv_file" type="file" name="jbis_csv_file" accept=".csv">
+
+      <h3 style="margin-top:18px;">データソースURL（自動保存・任意）</h3>
+      <p class="note">
+        STEP1/2/3 のCSVは URLだけで自動保存できます。<br>
+        未入力の場合は data/ の既存JSON（またはフォールバック）を使います。
+      </p>
+
+      <label for="keibago_csv_url">STEP1: keiba.go.jp 年度統計CSV URL（任意）</label>
+      <input id="keibago_csv_url" name="keibago_csv_url" placeholder="https://.../keibago_stats.csv">
+
+      <label for="nankan_csv_url">STEP2: nankankeiba CSV URL（任意）</label>
+      <input id="nankan_csv_url" name="nankan_csv_url" placeholder="https://.../nankan_style_distance.csv">
+
+      <label for="broodmare_trade_csv_url">STEP3: 繁殖牝馬 取引CSV URL（任意）</label>
+      <input id="broodmare_trade_csv_url" name="broodmare_trade_csv_url" placeholder="https://.../broodmare_trades.csv">
+
+      <h3 style="margin-top:18px;">南関補正の入力（任意）</h3>
+      <p class="note">STEP2の補正を「この馬に当てる」ための入力です（未入力なら補正0）。</p>
+
+      <label for="nankan_style">脚質（任意）</label>
+      <select id="nankan_style" name="nankan_style">
+        <option value="">（未指定）</option>
+        <option>逃げ</option>
+        <option>先行</option>
+        <option>差し</option>
+        <option>追込</option>
+      </select>
+
+      <label for="nankan_distance">距離（任意）</label>
+      <input id="nankan_distance" name="nankan_distance" placeholder="例：1200 / 1400 / 1600">
+
+      <div style="margin-top:18px;">
+        <button type="submit">評価する</button>
+      </div>
+    </form>
+
+    <p class="note" style="margin-top:18px;">
+      ※外部サイトの内容を保存・転載する用途ではありません。評価計算のために参照する機能は自己責任でご利用ください。
+    </p>
+  </div>
+</body>
+</html>

@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>評価結果</title>
+  <style>
+    body { font-family: sans-serif; margin: 24px; }
+    h2, h3 { margin-top: 24px; }
+    table { border-collapse: collapse; width: 100%; }
+    th, td { border: 1px solid #ccc; padding: 8px; vertical-align: top; }
+    th { background: #f2f2f2; }
+    .stars { font-size: 1.15em; letter-spacing: 2px; }
+    .box { border: 1px solid #ccc; padding: 16px; border-radius: 10px; margin-bottom: 18px; }
+    .muted { color:#666; font-size:12px; }
+    code { background:#f6f6f6; padding:2px 6px; border-radius:6px; }
+    a { text-decoration: none; }
+  </style>
+</head>
+<body>
+
+<h2>{{ horse_name }}｜評価結果</h2>
+
+<div class="box">
+  <b>修正・更新リンク（常時表示）</b><br>
+  <a href="/admin/refresh-data">🔄 データ再取得（CSV更新）</a>
+  &nbsp;|&nbsp;
+  <a href="/status" target="_blank">📌 現在のデータ状態（JSON）</a>
+  <div class="muted" style="margin-top:6px;">
+    ※ ADMIN_TOKEN を設定している場合は <code>/admin/refresh-data?token=XXXX</code> を使用してください。
+  </div>
+</div>
+
+<div class="box">
+  <h3>総合評価</h3>
+  <p class="stars">{{ report.overall }}（{{ report.grade }}）</p>
+  <p>{{ report.summary }}</p>
+</div>
+
+<div class="box">
+  <h3>競馬場別適性（★＋A〜D＋推定クラス）</h3>
+  <p class="muted">{{ report.track_comment }}</p>
+
+  <table>
+    <thead>
+      <tr>
+        <th>競馬場</th>
+        <th>評価</th>
+        <th>A〜D</th>
+        <th>推定クラス</th>
+        <th>補足</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for r in report.track_rows %}
+      <tr>
+        <td>{{ r.track }}</td>
+        <td class="stars">{{ r.stars }}</td>
+        <td>{{ r.grade }}</td>
+        <td>{{ r.class }}</td>
+        <td>{{ r.notes }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+<div class="box">
+  <h3>馬体評価</h3>
+  <p>総合：<span class="stars">{{ report.conformation.total }}</span>（{{ report.conformation.grade }}）</p>
+  <p class="muted">{{ report.conformation.comment }}</p>
+
+  <table>
+    <thead><tr><th>項目</th><th>評価</th></tr></thead>
+    <tbody>
+      {% for name, rating in report.conformation.details.items() %}
+      <tr>
+        <td>{{ name }}</td>
+        <td class="stars">{{ rating }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+{% if report.broodmare %}
+<div class="box">
+  <h3>繁殖牝馬評価</h3>
+  <p>総合：<span class="stars">{{ report.broodmare.total }}</span>（{{ report.broodmare.grade }}）</p>
+  <p class="muted">{{ report.broodmare.comment }}</p>
+  <p>
+    市場価値（目安）：<b>{{ report.broodmare.market_value_man }}</b> 万円
+    （レンジ {{ report.broodmare.market_value_range_man[0] }} 〜 {{ report.broodmare.market_value_range_man[1] }} 万円）
+    <span class="muted">/ 中心値: {{ report.broodmare.market_value_center_man }}（{{ report.broodmare.market_value_center_source }}）</span>
+  </p>
+
+  <table>
+    <thead><tr><th>項目</th><th>評価</th></tr></thead>
+    <tbody>
+      {% for name, rating in report.broodmare.details.items() %}
+      <tr>
+        <td>{{ name }}</td>
+        <td class="stars">{{ rating }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endif %}
+
+<div class="box">
+  <h3>デバッグ（任意）</h3>
+  <p class="muted">結果が似通う場合は、ここで performance_used や traits が変化しているか確認できます。</p>
+  <pre style="white-space:pre-wrap; font-size:12px; background:#f8f8f8; padding:10px; border-radius:8px;">{{ report._log | tojson(indent=2, ensure_ascii=False) }}</pre>
+</div>
+
+<p><a href="/">← 戻る</a></p>
+</body>
+</html>
