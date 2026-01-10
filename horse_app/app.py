@@ -8,7 +8,7 @@ from typing import Optional, Dict, Any
 from flask import Flask, render_template, request, flash, redirect, url_for, jsonify
 from werkzeug.utils import secure_filename
 
-from .services.netkeiba_fetcher import fetch_netkeiba_metrics
+from horse_app.services.netkeiba_fetcher import fetch_netkeiba_metrics
 from .services.jbis_normalizer import fetch_jbis_csv_bytes, normalize_jbis_csv
 from .services.keibago_fetcher import update_track_level_from_csv_url, load_track_level
 from .services.nankankeiba_loader import update_nankan_map_from_csv_url, load_nankan_map
