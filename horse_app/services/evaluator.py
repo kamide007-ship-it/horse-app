@@ -163,20 +163,56 @@ def suitability_score(tr: HorseTraits, tp: TrackProfile, level_map: Dict[str, fl
     return clamp(score, 1.0, 5.0), adj
 
 def class_estimate(score: float, level: float, is_jra: bool) -> str:
-    # levelが高いほど1段下げる
+    """
+    推定クラス表示（2段階）
+    ・A1のみ特別扱い
+      - 上位 → 重賞級
+      - 下位 → OP級
+    """
+
+    # 水準が高い競馬場ほど実効スコアを下げる
     adj = clamp(score - (level - 0.65) * 1.0, 1.0, 5.0)
 
+    # --- JRAは既存ロジック維持 ---
     if is_jra:
         if adj >= 4.4: return "OP〜3勝C"
         if adj >= 3.8: return "2勝C"
         if adj >= 3.2: return "1勝C"
         return "未勝利〜1勝C壁"
 
-    if adj >= 4.5: return "A級上位"
-    if adj >= 3.9: return "A級〜B1"
-    if adj >= 3.3: return "B2〜C1"
-    if adj >= 2.7: return "C2〜C3"
-    return "C3〜"
+    # --- 地方競馬（2段階） ---
+    # A1判定域
+    if adj >= 4.5:
+        return "A1（重賞級）"
+    if adj >= 4.1:
+        return "A1（OP級）"
+
+    # A2
+    if adj >= 3.7:
+        return "A2（上位）"
+    if adj >= 3.3:
+        return "A2（下位）"
+
+    # B1
+    if adj >= 3.0:
+        return "B1（上位）"
+    if adj >= 2.7:
+        return "B1（下位）"
+
+    # B2
+    if adj >= 2.4:
+        return "B2（上位）"
+    if adj >= 2.1:
+        return "B2（下位）"
+
+    # C1
+    if adj >= 1.8:
+        return "C1（上位）"
+    if adj >= 1.6:
+        return "C1（下位）"
+
+    # C2（最下位）
+    return "C2（下位）"
 
 def evaluate_track_suitability(traits: HorseTraits, style: Optional[str], distance: Optional[str]) -> dict:
     level_map = load_track_level()
