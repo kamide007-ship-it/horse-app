@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="card narrow">
+  <h1 class="h1">会員登録 <span class="en">Register</span></h1>
+  <form class="form" method="post">
+    <div class="field">
+      <label>メール（Email）</label>
+      <input type="email" name="email" required>
+    </div>
+    <div class="field">
+      <label>パスワード（Password）</label>
+      <input type="password" name="password" required>
+      <div class="help">8文字以上推奨</div>
+    </div>
+    <div class="actions">
+      <button class="btn">登録して始める</button>
+      <a class="btn ghost" href="{{ url_for('auth_login') }}">ログインへ</a>
+    </div>
+  </form>
+</section>
+{% endblock %}

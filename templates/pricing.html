@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="card">
+  <h1 class="h1">プラン選択 <span class="en">Pricing</span></h1>
+  <p class="muted">無料会員は評価1回まで。以降は課金が必要です。</p>
+
+  <div class="pricing">
+    <div class="plan">
+      <div class="plan-title">Free <span class="en">(無料)</span></div>
+      <div class="plan-price">¥0</div>
+      <ul class="list">
+        <li>評価：1回のみ</li>
+        <li>動画解析：可</li>
+        <li>3歳馬体生成：可</li>
+        <li>市場価格推定：可</li>
+      </ul>
+      <div class="small muted">※1回実行後は再評価不可（案内モーダル）</div>
+    </div>
+
+    <div class="plan highlight">
+      <div class="plan-title">Starter <span class="en">(個人・試用)</span></div>
+      <div class="plan-price">¥1,980/月</div>
+      <ul class="list">
+        <li>評価：月10回</li>
+        <li>動画解析／3歳生成／市場推定：可</li>
+        <li>保存・比較：直近10頭</li>
+      </ul>
+      <a class="btn" href="{{ url_for('checkout', plan='starter') }}">Stripeで登録</a>
+    </div>
+
+    <div class="plan">
+      <div class="plan-title">Pro <span class="en">(牧場・厩舎)</span></div>
+      <div class="plan-price">¥4,980/月</div>
+      <ul class="list">
+        <li>評価：月30回</li>
+        <li>全機能：可</li>
+        <li>保存・比較：無制限</li>
+        <li>優先処理：動画解析</li>
+      </ul>
+      <a class="btn" href="{{ url_for('checkout', plan='pro') }}">Stripeで登録</a>
+    </div>
+
+    <div class="plan">
+      <div class="plan-title">Enterprise <span class="en">(法人)</span></div>
+      <div class="plan-price">¥9,800〜/月</div>
+      <ul class="list">
+        <li>評価：無制限</li>
+        <li>全機能＋API/CSV出力</li>
+        <li>複数アカウント</li>
+        <li>価格：管理で可変（Stripe）</li>
+      </ul>
+      <a class="btn" href="{{ url_for('checkout', plan='enterprise') }}">Stripeで登録</a>
+      <div class="small muted">※StripeのPrice IDを設定してください</div>
+    </div>
+  </div>
+
+  <div class="card-in">
+    <h2 class="h2">Stripe設定 <span class="en">Stripe setup</span></h2>
+    <div class="small muted">RenderのEnvironmentに以下を設定してください：</div>
+    <pre class="code">STRIPE_SECRET_KEY
+STRIPE_WEBHOOK_SECRET
+STRIPE_PRICE_STARTER
+STRIPE_PRICE_PRO
+STRIPE_PRICE_ENTERPRISE
+APP_BASE_URL (例: https://your-app.onrender.com)</pre>
+  </div>
+</section>
+{% endblock %}

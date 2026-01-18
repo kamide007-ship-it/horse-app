@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="card">
+  <div class="row-between">
+    <h1 class="h1">評価履歴 <span class="en">History</span></h1>
+    <div class="small muted">今月の評価：{{ used }} / {{ limit if limit else '∞' }}</div>
+  </div>
+
+  {% if items %}
+    <div class="table">
+      <div class="thead">
+        <div>日時</div>
+        <div>父×母（母父）</div>
+        <div>総合</div>
+        <div>市場推定</div>
+        <div></div>
+      </div>
+      {% for it in items %}
+        <div class="trow">
+          <div class="small">{{ it.created_at.strftime('%Y-%m-%d %H:%M') }}</div>
+          <div>{{ it.horse_label }}</div>
+          <div><b>{{ it.total }}</b> / {{ it.rank }}</div>
+          <div>¥{{ "{:,.0f}".format(it.market_low) }}〜¥{{ "{:,.0f}".format(it.market_high) }}</div>
+          <div><a class="btn ghost" href="{{ url_for('view_evaluation', eval_id=it.id) }}">表示</a></div>
+        </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <div class="muted">まだ評価履歴がありません。</div>
+  {% endif %}
+</section>
+{% endblock %}

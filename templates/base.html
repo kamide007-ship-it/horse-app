@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Equine Vet Synapse</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/app.css') }}">
+</head>
+<body>
+  <header class="topbar">
+    <div class="wrap">
+      <div class="brand">
+        <div class="logo">EVS</div>
+        <div>
+          <div class="title">Equine Vet Synapse</div>
+          <div class="subtitle">馬体 × 動画 × 血統 × 市場 を統合評価</div>
+        </div>
+      </div>
+      <nav class="nav">
+        {% if current_user.is_authenticated %}
+          <a href="{{ url_for('index') }}">評価</a>
+          <a href="{{ url_for('history') }}">履歴</a>
+          <a href="{{ url_for('pricing') }}">プラン</a>
+          <a href="{{ url_for('auth_logout') }}" class="muted">ログアウト</a>
+        {% else %}
+          <a href="{{ url_for('auth_login') }}">ログイン</a>
+        {% endif %}
+      </nav>
+    </div>
+  </header>
+
+  <main class="wrap">
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        <div class="flash">
+          {% for m in messages %}<div class="flash-item">{{ m }}</div>{% endfor %}
+        </div>
+      {% endif %}
+    {% endwith %}
+
+    {% block content %}{% endblock %}
+  </main>
+
+  <footer class="footer">
+    <div class="wrap">
+      <div class="small">© Equine Vet Synapse — v1.0</div>
+    </div>
+  </footer>
+
+  <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+</body>
+</html>

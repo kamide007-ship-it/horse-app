@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="card narrow">
+  <h1 class="h1">ログイン <span class="en">Login</span></h1>
+  <form class="form" method="post">
+    <div class="field">
+      <label>メール（Email）</label>
+      <input type="email" name="email" required>
+    </div>
+    <div class="field">
+      <label>パスワード（Password）</label>
+      <input type="password" name="password" required>
+    </div>
+    <div class="actions">
+      <button class="btn">ログイン</button>
+      <a class="btn ghost" href="{{ url_for('auth_register') }}">会員登録</a>
+    </div>
+  </form>
+</section>
+{% endblock %}
