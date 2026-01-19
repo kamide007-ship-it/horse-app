@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="card">
+  <h1 class="h1">プラン選択 <span class="en">Pricing</span></h1>
+  <p class="muted">無料会員は評価1回まで。2回目以降は「有料プラン申請（銀行振込）」→管理者承認で有効化されます。</p>
+
+  <div class="pricing">
+    <div class="plan">
+      <div class="plan-title">Free <span class="en">(無料)</span></div>
+      <div class="plan-price">¥0</div>
+      <ul class="list">
+        <li>評価：1回のみ</li>
+        <li>動画解析：可</li>
+        <li>3歳馬体生成：可</li>
+        <li>市場価格推定：可</li>
+      </ul>
+      <div class="small muted">※1回実行後は再評価不可（案内モーダル）</div>
+      <form method="post" action="{{ url_for('checkout', plan='free') }}" style="margin-top:12px;">
+        <button class="btn secondary" type="submit">無料で開始</button>
+      </form>
+    </div>
+
+    <div class="plan highlight">
+      <div class="plan-title">Starter <span class="en">(個人・試用)</span></div>
+      <div class="plan-price">¥1,980/月</div>
+      <ul class="list">
+        <li>評価：月10回</li>
+        <li>動画解析／3歳生成／市場推定：可</li>
+        <li>保存・比較：直近10頭</li>
+      </ul>
+      <form method="post" action="{{ url_for('checkout', plan='starter') }}">
+        <button class="btn" type="submit">銀行振込で申請</button>
+      </form>
+    </div>
+
+    <div class="plan">
+      <div class="plan-title">Pro <span class="en">(牧場・厩舎)</span></div>
+      <div class="plan-price">¥4,980/月</div>
+      <ul class="list">
+        <li>評価：月30回</li>
+        <li>全機能：可</li>
+        <li>保存・比較：無制限</li>
+        <li>優先処理：動画解析</li>
+      </ul>
+      <form method="post" action="{{ url_for('checkout', plan='pro') }}">
+        <button class="btn" type="submit">銀行振込で申請</button>
+      </form>
+    </div>
+
+    <div class="plan">
+      <div class="plan-title">Enterprise <span class="en">(法人)</span></div>
+      <div class="plan-price">¥9,800〜/月</div>
+      <ul class="list">
+        <li>評価：無制限</li>
+        <li>全機能＋API/CSV出力</li>
+        <li>複数アカウント</li>
+        <li>価格：管理で可変</li>
+      </ul>
+      <form method="post" action="{{ url_for('checkout', plan='enterprise') }}">
+        <button class="btn" type="submit">銀行振込で申請</button>
+      </form>
+    </div>
+  </div>
+
+  <div class="card-in">
+    <h2 class="h2">運用メモ <span class="en">Notes</span></h2>
+    <div class="small muted">有料プランは「申請→振込→管理者承認」で有効化されます。管理者ページ：/admin</div>
+  </div>
+</section>
+{% endblock %}

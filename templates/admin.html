@@ -1,0 +1,91 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="grid">
+  <section class="card">
+    <h1 class="h1">管理者（Admin） <span class="en">Owner Console</span></h1>
+    <p class="muted">ユーザー/プラン/評価回数の確認・リセット用（テスト/運用）</p>
+
+    <table class="table">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Email</th>
+          <th>Plan</th>
+          <th>Used(Total)</th>
+          <th>Used(Month)</th>
+          <th>Limit(Month)</th>
+          <th>Admin</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for u in users %}
+        <tr>
+          <td>{{ u.id }}</td>
+          <td>{{ u.email }}</td>
+          <td>{{ u.plan }}</td>
+          <td>{{ u.quota_used_total }}</td>
+          <td>{{ u.quota_used_month }}</td>
+          <td>{% if u.monthly_limit() is none %}∞{% else %}{{ u.monthly_limit() }}{% endif %}</td>
+          <td>{{ 'YES' if u.is_admin else 'NO' }}</td>
+          <td>
+            <form method="post" action="{{ url_for('admin_reset', user_id=u.id) }}" style="display:inline-block">
+              <button class="btn secondary" type="submit">回数リセット</button>
+            </form>
+            <form method="post" action="{{ url_for('admin_set_plan', user_id=u.id) }}" style="display:inline-block">
+              <select name="plan" required>
+                <option value="free" {% if u.plan=='free' %}selected{% endif %}>free</option>
+                <option value="starter" {% if u.plan=='starter' %}selected{% endif %}>starter</option>
+                <option value="pro" {% if u.plan=='pro' %}selected{% endif %}>pro</option>
+                <option value="enterprise" {% if u.plan=='enterprise' %}selected{% endif %}>enterprise</option>
+              </select>
+              <button class="btn" type="submit">プラン変更</button>
+            </form>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </section>
+
+  <section class="card">
+    <h2 class="h2">入金申請 <span class="en">Payment Requests</span></h2>
+    <p class="muted">ユーザーが「Starter/Pro/Enterprise」を選択すると申請がここに追加されます。入金確認後に承認するとプランが有効になります。</p>
+
+    <table class="table">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>User</th>
+          <th>Plan</th>
+          <th>Ref</th>
+          <th>Status</th>
+          <th>Created</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for r in requests %}
+        <tr>
+          <td>{{ r.id }}</td>
+          <td>{{ r.user.email }}</td>
+          <td>{{ r.plan }}</td>
+          <td>{{ r.reference_code }}</td>
+          <td>{{ r.status }}</td>
+          <td>{{ r.created_at.strftime('%Y-%m-%d %H:%M') }}</td>
+          <td>
+            {% if r.status == 'pending' %}
+            <form method="post" action="{{ url_for('admin_approve_payment', pr_id=r.id) }}" style="display:inline-block">
+              <button class="btn" type="submit">承認</button>
+            </form>
+            {% else %}
+            <span class="muted">-</span>
+            {% endif %}
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </section>
+</div>
+{% endblock %}

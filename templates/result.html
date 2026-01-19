@@ -1,0 +1,105 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="card">
+  <div class="row-between">
+    <div>
+      <h1 class="h1">評価結果 <span class="en">Result</span></h1>
+      <div class="muted">{{ label }} / Algo: {{ result.scores.algo_version }}</div>
+    </div>
+    <div class="pill">プラン：{{ current_user.plan }}</div>
+  </div>
+
+  <div class="pillbar">
+    <span class="pill {{ 'pill-ok' if result.inputs_used.has_side_photo else 'pill-ng' }}">写真：{{ '添付済み' if result.inputs_used.has_side_photo else 'なし' }}</span>
+    <span class="pill {{ 'pill-ok' if result.inputs_used.has_video else 'pill-ng' }}">動画：{{ '添付済み' if result.inputs_used.has_video else 'なし' }}</span>
+    <span class="pill">確信度：{{ result.scores.confidence }}</span>
+  </div>
+
+  <div class="result-grid">
+    <div class="scorecard">
+      <div class="score">{{ result.scores.total }}</div>
+      <div class="rank">{{ result.scores.rank }}</div>
+      <div class="surface">{{ result.scores.surface.ja }} <span class="en">{{ result.scores.surface.en }}</span></div>
+      <div class="reason">{{ result.scores.reason.ja }} <span class="en">{{ result.scores.reason.en }}</span></div>
+    </div>
+
+    <div class="media">
+      <div class="media-title">3歳馬体予測（実写真ベース） <span class="en">3yo prediction</span></div>
+      {% if result.predicted_3yo_rel %}
+        <img class="img" src="{{ url_for('static', filename=result.predicted_3yo_rel.split('static/')[1] if 'static/' in result.predicted_3yo_rel else result.predicted_3yo_rel) }}" alt="3yo">
+      {% else %}
+        <div class="placeholder">側面写真がないため生成できません</div>
+      {% endif %}
+    </div>
+  </div>
+
+  <div class="grid2">
+    <div class="card-in">
+      <h2 class="h2">パラメータ <span class="en">Traits</span></h2>
+      <div class="bars">
+        {% if result.scores.traits_display %}
+          {% for t in result.scores.traits_display %}
+            <div class="barrow">
+              <div class="barlabel">{{ t.label_ja }} <span class="en">{{ t.label_en }}</span></div>
+              <div class="bar"><div class="fill" style="width: {{ t.value }}%"></div></div>
+              <div class="barval">{{ t.value }}</div>
+            </div>
+          {% endfor %}
+        {% else %}
+          {% for k,v in result.scores.traits.items() %}
+            <div class="barrow">
+              <div class="barlabel">{{ k }}</div>
+              <div class="bar"><div class="fill" style="width: {{ v }}%"></div></div>
+              <div class="barval">{{ v }}</div>
+            </div>
+          {% endfor %}
+        {% endif %}
+      </div>
+      {% if result.inputs_used.note_ja %}
+        <div class="muted small" style="margin-top:10px;">{{ result.inputs_used.note_ja }} <span class="en">{{ result.inputs_used.note_en }}</span></div>
+      {% endif %}
+    </div>
+
+    <div class="card-in">
+      <h2 class="h2">市場価格推定 <span class="en">Market estimate</span></h2>
+      <div class="market">
+        <div class="market-range">¥{{ "{:,.0f}".format(result.market.yen_low) }} 〜 ¥{{ "{:,.0f}".format(result.market.yen_high) }}</div>
+        <div class="muted small">アンカー（種牡馬中央値）：¥{{ "{:,.0f}".format(result.market.anchor) }}</div>
+        <div class="small">{{ result.market.source.ja }}</div>
+        <div class="en small">{{ result.market.source.en }}</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="grid2">
+    <div class="card-in">
+      <h2 class="h2">なぜこの評価なのか <span class="en">Why</span></h2>
+      <ul class="list">
+        <li><b>Body</b>: {{ result.scores.notes.body[0] }}</li>
+        <li><b>Photo</b>: {{ result.scores.notes.photo[0] }}</li>
+        <li><b>Video</b>: {{ result.scores.notes.video[0] }}</li>
+        <li><b>Pedigree</b>: {{ result.scores.notes.pedigree[0] }}</li>
+      </ul>
+      <div class="small muted">未入力項目：{{ result.inputs_used.missing|join(' / ') if result.inputs_used.missing else 'なし' }}</div>
+    </div>
+
+    <div class="card-in">
+      <h2 class="h2">入力内容 <span class="en">Inputs</span></h2>
+      <div class="kv">
+        <div><span class="k">父</span> {{ payload.sire }}</div>
+        <div><span class="k">母</span> {{ payload.dam }}</div>
+        <div><span class="k">母父</span> {{ payload.damsire }}</div>
+        <div><span class="k">生年月日</span> {{ payload.dob }}</div>
+        <div><span class="k">性別</span> {{ payload.sex }}</div>
+        <div><span class="k">毛色</span> {{ payload.coat }}</div>
+        <div><span class="k">馬体重</span> {{ payload.body_weight or '未入力' }}</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="actions">
+    <a class="btn ghost" href="{{ url_for('index') }}">次の評価</a>
+    <a class="btn ghost" href="{{ url_for('history') }}">履歴</a>
+  </div>
+</section>
+{% endblock %}

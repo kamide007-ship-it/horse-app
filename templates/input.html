@@ -1,0 +1,165 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="grid">
+  <section class="card">
+    <h1 class="h1">評価入力 <span class="en">Evaluation Input</span></h1>
+    <p class="muted">空欄でも評価できますが、測尺・写真・動画を入れるほど精度が上がります。</p>
+
+    <form class="form" method="post" enctype="multipart/form-data">
+      <div class="row">
+        <div class="field">
+          <label>父（Sire）</label>
+          <input name="sire" placeholder="例：オールザベスト" required>
+        </div>
+        <div class="field">
+          <label>母（Dam）</label>
+          <input name="dam" placeholder="例：サウスインザダーク" required>
+        </div>
+        <div class="field">
+          <label>母父（Dam-sire）</label>
+          <input name="damsire" placeholder="例：サウスヴィグラス" required>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="field">
+          <label>生年月日（DOB）</label>
+          <input type="date" name="dob" required>
+        </div>
+        <div class="field">
+          <label>性別（Sex）</label>
+          <select name="sex" required>
+            <option value="">選択</option>
+            <option>牡馬</option>
+            <option>牝馬</option>
+            <option>せん馬</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>毛色（Coat）</label>
+          <select name="coat" required>
+            <option value="">選択</option>
+            <option>鹿毛</option>
+            <option>黒鹿毛</option>
+            <option>青鹿毛</option>
+            <option>青毛</option>
+            <option>栗毛</option>
+            <option>栃栗毛</option>
+            <option>芦毛</option>
+            <option>粕毛</option>
+            <option>白毛</option>
+            <option>佐目毛</option>
+            <option>河原毛</option>
+            <option>月毛</option>
+            <option>パロミノ</option>
+            <option>バックスキン</option>
+            <option>シルバー</option>
+            <option>ロアン</option>
+            <option>ダン</option>
+            <option>クリーム</option>
+            <option>その他（自由入力）</option>
+          </select>
+          <input name="coat_other" placeholder="その他の場合：例）バックスキン / パロミノ / ロアン など" style="margin-top:8px;">
+          <div class="help">※入力した毛色と、表示・生成画像の毛色は順守します。</div>
+        </div>
+      </div>
+
+      <h2 class="h2">測尺・馬体 <span class="en">Measurements</span></h2>
+      <div class="row">
+        <div class="field">
+          <label>馬体重 kg（Body weight）</label>
+          <input name="body_weight" placeholder="例：450">
+        </div>
+        <div class="field">
+          <label>体高 cm（Height）</label>
+          <input name="height" placeholder="任意">
+        </div>
+        <div class="field">
+          <label>胸囲 cm（Girth）</label>
+          <input name="girth" placeholder="任意">
+        </div>
+        <div class="field">
+          <label>管囲 cm（Cannon）</label>
+          <input name="cannon" placeholder="任意">
+        </div>
+        <div class="field">
+          <label>想定距離 m（Target distance）</label>
+          <input name="distance_m" placeholder="例：1600（空欄OK）">
+          <div class="help">距離が入ると、α(d,t) に反映され評価精度が上がります。</div>
+        </div>
+      </div>
+
+      <h2 class="h2">写真・動画 <span class="en">Media</span></h2>
+      <div class="row">
+        <div class="field">
+          <label>側面写真（必須推奨）</label>
+          <input type="file" name="side_photo" accept="image/*">
+          <div class="help">横見：評価の基準画像として使用</div>
+          <div class="preview" id="pv_side"></div>
+        </div>
+        <div class="field">
+          <label>前面写真（任意）</label>
+          <input type="file" name="front_photo" accept="image/*">
+          <div class="preview" id="pv_front"></div>
+        </div>
+        <div class="field">
+          <label>後面写真（任意）</label>
+          <input type="file" name="rear_photo" accept="image/*">
+          <div class="preview" id="pv_rear"></div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="field">
+          <label>動画（歩き/速歩/キャンター）</label>
+          <input type="file" name="video" accept="video/*">
+          <div class="help">動画解析：推進量・安定性を加点/減点（年齢補正はアルゴリズム側で適用）</div>
+          <div class="preview" id="pv_video"></div>
+        </div>
+        <div class="field"></div>
+        <div class="field"></div>
+      </div>
+
+      <h2 class="h2">市場推定（精度向上） <span class="en">Market</span></h2>
+      <p class="muted">入力があるほど市場価格推定の精度が上がります（未入力時は内部DBの中央値で補完）。</p>
+      <div class="row">
+        <div class="field">
+          <label>種牡馬の市場取引中央値（円）</label>
+          <input name="sire_fee_median" placeholder="例：3000000">
+        </div>
+        <div class="field">
+          <label>母馬の想定価値（円）</label>
+          <input name="dam_value" placeholder="任意">
+        </div>
+        <div class="field">
+          <label>近親ブラックタイプ数</label>
+          <input name="blacktype_count" placeholder="任意">
+        </div>
+        <div class="field">
+          <label>近親G/S勝ち馬数</label>
+          <input name="nearby_gsw" placeholder="任意">
+        </div>
+      </div>
+
+      <div class="field">
+        <label>メモ（任意）</label>
+        <textarea name="notes" rows="3" placeholder="例：川崎デビュー予定、調教状況など"></textarea>
+      </div>
+
+      <div class="actions">
+        <button class="btn">評価を実行</button>
+        <div class="small muted">無料会員は1回のみ実行できます（実行後は課金案内が表示され、再評価できません）。</div>
+      </div>
+    </form>
+  </section>
+
+  <aside class="card">
+    <h2 class="h2">入力のコツ <span class="en">Tips</span></h2>
+    <ul class="list">
+      <li>横見写真は「真横・水平・全身」で。</li>
+      <li>動画は「歩き/速歩/キャンター」を短く明瞭に。</li>
+      <li>馬体重・測尺が入ると成長曲線の補正が安定します。</li>
+      <li>市場推定は「種牡馬中央値＋母価値＋近親実績」で説明可能にしています。</li>
+    </ul>
+  </aside>
+</div>
+{% endblock %}

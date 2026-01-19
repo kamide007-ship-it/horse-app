@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="card">
+  <h1 class="h1">お支払い案内 <span class="en">Bank transfer</span></h1>
+  <p class="muted">選択プラン：<b>{{ plan|upper }}</b> ／ 参照コード：<b>{{ request_ref }}</b></p>
+
+  <div class="card-in">
+    <h2 class="h2">振込先 <span class="en">Bank details</span></h2>
+
+    <table class="table">
+      <tr><th>銀行</th><td>{{ bank.bank_name }}</td></tr>
+      <tr><th>支店</th><td>{{ bank.branch_name }}</td></tr>
+      <tr><th>種別</th><td>{{ bank.account_type }}</td></tr>
+      <tr><th>口座番号</th><td>{{ bank.account_number }}</td></tr>
+      <tr><th>口座名義</th><td>{{ bank.account_name }}</td></tr>
+    </table>
+
+    <div class="note">
+      <b>重要：</b>{{ bank.note }}<br>
+      <span class="muted">入金確認後、管理者がプランを有効化します。</span>
+    </div>
+
+    <div class="actions">
+      <a class="btn" href="{{ url_for('index') }}">評価画面へ</a>
+      <a class="btn btn-ghost" href="{{ url_for('pricing') }}">プランに戻る</a>
+    </div>
+  </div>
+</section>
+{% endblock %}

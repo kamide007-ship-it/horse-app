@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="card">
+  <h1 class="h1">評価回数の上限に達しました <span class="en">Limit reached</span></h1>
+  <p class="muted">無料会員は評価1回までです。プランを選択して継続してください。</p>
+
+  <div class="actions">
+    <a class="btn" href="{{ url_for('pricing') }}">プランを見る</a>
+    <a class="btn ghost" href="{{ url_for('history') }}">履歴を見る</a>
+  </div>
+
+  <div class="modal" data-open="true">
+    <div class="modal-card">
+      <div class="modal-title">アップグレードのご案内 <span class="en">Upgrade</span></div>
+      <div class="modal-body">
+        もう一度評価するには有料プランが必要です。<br>
+        Starter（¥1,980/月）または Pro（¥4,980/月）がおすすめです。
+      </div>
+      <div class="modal-actions">
+        <a class="btn" href="{{ url_for('pricing') }}">プラン選択へ</a>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}
